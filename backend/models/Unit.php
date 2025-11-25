@@ -13,9 +13,9 @@ class Unit {
         $this->conn = $db;
     }
 
-    // Read Units (Filter by Property ID if needed)
+    // 1. Read All Units (With Property Name)
     public function read() {
-        // Query to join with property name for easier reading
+        // LEFT JOIN ensures unit shows up even if property name is missing
         $query = "SELECT p.name as property_name, u.* 
                   FROM " . $this->table . " u
                   LEFT JOIN properties p ON u.property_id = p.id
@@ -26,13 +26,13 @@ class Unit {
         return $stmt;
     }
 
+    // 2. Create Unit
     public function create() {
         $query = "INSERT INTO " . $this->table . " 
                   SET property_id=:property_id, unit_name=:unit_name, status=:status, base_price=:base_price";
         
         $stmt = $this->conn->prepare($query);
 
-        // Sanitize
         $this->unit_name = htmlspecialchars(strip_tags($this->unit_name));
         $this->status = $this->status ?? 'clean';
 
@@ -45,10 +45,29 @@ class Unit {
         return false;
     }
 
+    // 3. Delete Unit
     public function delete() {
         $query = "DELETE FROM " . $this->table . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $this->id);
+        if($stmt->execute()) return true;
+        return false;
+    }
+
+    // 4. Update Status (Housekeeping)
+    public function updateStatus($status) {
+        $query = "UPDATE " . $this->table . " 
+                  SET status = :status 
+                  WHERE id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        $status = htmlspecialchars(strip_tags($status));
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':id', $this->id);
+
         if($stmt->execute()) return true;
         return false;
     }

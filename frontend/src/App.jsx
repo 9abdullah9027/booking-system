@@ -6,6 +6,8 @@ import Properties from './pages/Properties';
 import Units from './pages/Units';
 import Bookings from './pages/Bookings';  
 import CalendarView from './pages/CalendarView';
+import Users from './pages/Users';  
+ import Housekeeping from './pages/Housekeeping';
 
 
 function App() {
@@ -22,7 +24,8 @@ function App() {
              <Route path="/properties/units" element={<Units />} />
               <Route path="/bookings" element={<Bookings />} />
               <Route path="/calendar" element={<CalendarView />} />
-            
+            <Route path="/users" element={<Users />} />
+             <Route path="/housekeeping" element={<Housekeeping />} />s
         </Route>
 
       </Routes>
